@@ -6,15 +6,23 @@
 package GUI;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -27,6 +35,9 @@ import javafx.stage.Stage;
  * @author bader-aul
  */
 public class UIControls extends Application {
+
+    String onlinePath = "https://homepages.cae.wisc.edu/~ece533/images/fruits";
+    String localPath = "file:///Users/bader-aul/NetBeansProjects/AJLab_Spring2021/girl.png";
 
     @Override
     public void start(Stage primaryStage) {
@@ -93,7 +104,7 @@ public class UIControls extends Application {
         //second method: adding complete rows or columns
         gp.addRow(1, box1, box2);
 
-        //extra GridPane setters
+        //GridPane extra setters
         gp.setAlignment(Pos.CENTER); //alignment of GridPane's children
         gp.setHgap(10); //horizontal spacing between gp's children
         gp.setVgap(10); //vertical spacing between gp's children
@@ -147,7 +158,7 @@ public class UIControls extends Application {
         fp.setMinWidth(500); //same as width of scene
         fp.setMaxWidth(500); // same as width of scene
 
-        //extra FlowPane setters
+        //FlowPane extra setters
         fp.setHgap(20); //horizontal space between children, i.e. between GridPane & StackPane
         //no need to setVgap since children are aligned horizontally
         fp.setAlignment(Pos.CENTER); //FlowPane aligns its children TOP_LEFT by default
@@ -180,7 +191,7 @@ public class UIControls extends Application {
          */
         hbox.getChildren().addAll(bar, cancelBtn, saveBtn);
 
-        //extra HBox setters
+        //HBox extra setters
         hbox.setAlignment(Pos.CENTER); //HBox default alignment is TOP_LEFT
         hbox.setSpacing(15); //horizontal space between children
 
@@ -199,12 +210,102 @@ public class UIControls extends Application {
          * vbox.getChildren().add(hbox);
          */
 
-        //extra VBox setters
+        //VBox extra setters
         vbox.setAlignment(Pos.CENTER); //VBox default alignment is TOP_LEFT
         vbox.setSpacing(15); //vertical space between children
 
+        /*
+         * Sixth Pane = TabPane
+         */
+        TabPane tp = new TabPane();
+
+        /*
+         * Creating the Tabs using different constructors
+         */
+        Tab tab1 = new Tab("Example Controls"); //setting tab title using constructor
+
+        Tab tab2 = new Tab();
+        tab2.setText("Tab 2"); //setting tab title using text setter
+
+        Tab tab3 = new Tab("Tab 3", new Label("Label")); //adding a node of type label to the content of the tab
+
+        Tab tab4 = new Tab("Tab 4");
+
+        Tab tab5 = new Tab("Tab 5");
+
+        /*
+         * Tabs Settings
+         */
+        tab1.setContent(vbox); //setting the vbox as the content of tab1
+        //=====================================================================
+
+        //adding a node of type ComboBox to the content of the tab2
+        ComboBox<String> combo = new ComboBox<>();
+        combo.getItems().addAll("Element 1", "Element 2", "Element 3");
+        tab2.setContent(combo);
+        //=====================================================================
+
+        /*
+         * Ways to create fonts programmatically:
+         *
+         * Font f = new Font(20);
+         * Font f1 = new Font("Times New Roman", 20);
+         * Font f2 = Font.font("Arial", FontWeight.EXTRA_BOLD,
+         * FontPosture.ITALIC, 18);
+         *
+         * Then, the created font can be set on nodes that have font property,
+         * e.g. Label, Button, TextField, TextArea...
+         * using setFont() setter
+         *
+         * OR we can set font in CSS using setStyle
+         */
+        tab3.setStyle("-fx-font-family:Courier New;-fx-font-size:25px;-fx-font-weight:bold;");
+        //=====================================================================
+
+        /*
+         * Displaying an online image:
+         * 1 - Create Image object with the URL
+         * 2- Add Image object to ImageView
+         *
+         * OR
+         *
+         * Create ImageView with the URL:
+         * ImageView imageView = new ImageView(onlinePath);
+         */
+        Image image = new Image(onlinePath);
+        ImageView imageView = new ImageView(image);
+
+        tab4.setContent(imageView);
+        //=====================================================================
+
+        ImageView imageView2 = new ImageView(localPath);
+//        imageView2.setFitHeight(500); //the image will be shown as a square while in fact it is a rectangle
+        imageView2.setFitWidth(500);
+        imageView2.setPreserveRatio(true); //preserves the initial ratio of the image
+        tab5.setContent(imageView2);
+        //=====================================================================
+
+        /*
+         * Adding the Tabs to the TabPane
+         */
+        tp.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);
+
+        //TabPane extra setters
+        tp.setSide(Side.TOP);
+        /*
+         * setBackground needs parameter of type Background
+         * Background constructor needs object of type BackgroundFill
+         * BackgroundFill needs color, corner radius, and insets parameter
+         *
+         * tp.setBackground (new Background (new BackgroundFill (Color.RED,
+         * new CornerRadii(50), new Insets(20))));
+         */
+        //set border styles for TabPane
+        tp.setStyle("-fx-border-radius:50;-fx-border-color:red;-fx-border-style:dashed;-fx-border-width:5;");
+        tp.setPadding(new Insets(20));
+
         //Adding the final pane containing my entire layout to the Scene
-        Scene scene = new Scene(vbox, 500, 500);
+        Scene scene = new Scene(tp, 500, 500);
 
         primaryStage.setTitle("GUI Controls");
         primaryStage.setAlwaysOnTop(true);
@@ -218,5 +319,4 @@ public class UIControls extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }
