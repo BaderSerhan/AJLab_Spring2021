@@ -72,57 +72,117 @@ public class DatabaseEx extends Application {
         TryInitializeDB();
 
         btnView.setOnAction(e -> {
-            getStaffById();
+            try {
+                getStaffById();
+            } catch (SQLException ex) {
+                ex.getErrorCode();
+            }
         });
 
         btnInsert.setOnAction(e -> {
-            insertResult();
+            try {
+                insertResult();
+            } catch (SQLException ex) {
+                ex.getErrorCode();
+            }
         });
 
         btnUpdate.setOnAction(e -> {
-            updateResult();
+            try {
+                updateResult();
+            } catch (SQLException ex) {
+                System.out.println("Failed to update record : " + ex);
+            }
         });
 
-        btnClear.setOnAction(e -> {
-            //TODO
-        });
+        btnClear.setOnAction(e -> clearFields());
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public void TryInitializeDB() throws ClassNotFoundException {
-        try {
-            String host = "localhost";
-            String username = "root";
-            String rootPassword = "q1w2e3r4";
+    public void TryInitializeDB() throws ClassNotFoundException, SQLException {
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        String host = "localhost";
+        String username = "root";
+        String rootPassword = "q1w2e3r4";
 
-            Connection connection = DriverManager
-                    .getConnection("jdbc:mysql://" + host + "/Staff?"
-                            + "user=" + username + "&password=" + rootPassword);
+        // Load the JDBC driver
+//    Class.forName("com.mysql.jdbc.Driver"); //Deprecated
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        System.out.println("Driver loaded");
 
-            System.out.println("Db Connected");
+        // Establish a connection
+        Connection connection = DriverManager
+                .getConnection("jdbc:mysql://" + host + "/Staff?"
+                        + "user=" + username + "&password=" + rootPassword);
 
-            statement = connection.createStatement();
+        System.out.println("Database connected");
 
-        } catch (SQLException ex) {
-            System.out.println("Connection failed");
-            lblRecord.setText("Connection failed" + ex);
+        // Create a statement
+        statement = connection.createStatement();
+    }
+
+    private void getStaffById() throws SQLException {
+        String getStaffByIdQueryString = "select * from staff where Id = " + "'" + txtID.getText().trim() + "'";
+        ResultSet resultSet = statement.executeQuery(getStaffByIdQueryString);
+        if (resultSet.next()) {
+            txtLN.setText(resultSet.getString(2));
+            txtFN.setText(resultSet.getString(3));
+            txtMI.setText(resultSet.getString(4));
+            txtAddress.setText(resultSet.getString(5));
+            txtCity.setText(resultSet.getString(6));
+            txtState.setText(resultSet.getString(7));
+            txtTel.setText(resultSet.getString(8));
+            txtEmail.setText(resultSet.getString(9));
+            lblRecord.setText("Record Found");
+        } else {
+            lblRecord.setText("Record Not Found");
         }
     }
 
-    private void getStaffById() {
-        //TODO
+    private void insertResult() throws SQLException {
+        String insertQueryString = "insert into staff (Id, lastName, firstName"
+                + ", mi, address, city, state, telephone, email) values ('" + txtID.getText().trim() + "','"
+                + txtLN.getText().trim() + "','"
+                + txtFN.getText().trim() + "','"
+                + txtMI.getText().trim() + "','"
+                + txtAddress.getText().trim() + "','"
+                + txtCity.getText().trim() + "','"
+                + txtState.getText().trim() + "','"
+                + txtTel.getText().trim() + "','"
+                + txtEmail.getText().trim() + "')";
+
+        statement.executeUpdate(insertQueryString);
     }
 
-    private void insertResult() {
-        //TODO
+    private void updateResult() throws SQLException {
+        String updateQueryString = "update staff set "
+                + " lastName = '" + txtLN.getText().trim()
+                + "' , firstName = '" + txtFN.getText().trim()
+                + "' , mi = '" + txtMI.getText().trim()
+                + "' , address = '" + txtAddress.getText().trim()
+                + "' , city = '" + txtCity.getText().trim()
+                + "' , state = '" + txtState.getText().trim()
+                + "' , telephone = '" + txtTel.getText().trim()
+                + "' , email = '" + txtEmail.getText().trim()
+                + "' where id = '" + txtID.getText().trim() + "';";
+
+        statement.executeUpdate(updateQueryString);
+        lblRecord.setText("Data Updated");
+
     }
 
-    private void updateResult() {
-        //TODO
+    private void clearFields() {
+        txtID.setText("");
+        txtLN.setText("");
+        txtFN.setText("");
+        txtMI.setText("");
+        txtAddress.setText("");
+        txtCity.setText("");
+        txtState.setText("");
+        txtTel.setText("");
+        txtEmail.setText("");
     }
 }
